@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1479100783 source:/home/rafael/Cpp/dataStructure/allegroProjects/testProject/main.cpp
+	<stdio.h>
+	<allegro.h>
+	<allegro_native_dialog.h>
+	<allegro_image.h>
+	<iostream>
+
