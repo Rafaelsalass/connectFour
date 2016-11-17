@@ -48,7 +48,6 @@
 		</Compiler>
 		<Unit filename="include/game.h" />
 		<Unit filename="include/menu.h" />
-		<Unit filename="include/player.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

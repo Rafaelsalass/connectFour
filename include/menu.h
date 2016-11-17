@@ -42,7 +42,7 @@ menu::menu(){
             al_draw_bitmap(startSelected,-1,0,0);
             al_flip_display();
             if(mouseState.buttons & 1){
-                std::cout << "psdfds" << std::endl;
+                //std::cout << "psdfds" << std::endl;
                 newGame = new game(display);
                 al_resize_display(display, displayWith, displayHeight);
             }
