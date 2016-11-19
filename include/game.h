@@ -3,7 +3,7 @@
 
 #define rows 7
 #define column 7
-#define widthPixels 630
+#define widthPixels 1098
 #define heightPixels 630
 #define playerOne 1
 #define playerTwo 2
@@ -33,9 +33,14 @@ class game{
     ALLEGRO_BITMAP* playerOnePeg;
     ALLEGRO_BITMAP* playerTwoPeg;
     ALLEGRO_BITMAP* emptySpace;
+    ALLEGRO_BITMAP* playerTurnSelected;
+    ALLEGRO_BITMAP* playerTurnUnselected;
+    ALLEGRO_BITMAP* computerTurnSelected;
+    ALLEGRO_BITMAP* computerTurnUnselected;
     void printGraphicalBoard();
     void changeBackground();
     bool isDraw();
+    bool invalidInput;
 };
 
 game::game(){
@@ -47,6 +52,11 @@ game::game(ALLEGRO_DISPLAY* display){
     playerOnePeg = al_load_bitmap("gameGraphics/playerOne.png");
     playerTwoPeg = al_load_bitmap("gameGraphics/playerTwo.png");
     emptySpace = al_load_bitmap("gameGraphics/empy.png");
+    computerTurnSelected = al_load_bitmap("gameGraphics/computerTurnSelected.png");
+    computerTurnUnselected = al_load_bitmap("gameGraphics/computerTurnUnselected.png");
+    playerTurnSelected = al_load_bitmap("gameGraphics/playerTurnSelected.png");
+    playerTurnUnselected = al_load_bitmap("gameGraphics/playerTurnUnselected.png");
+    invalidInput = false;
     this->display = display;
     startGame();
 }
@@ -58,26 +68,24 @@ void game::startGame(){
 
     this->changeBackground();
 
-    int actualRow;
     this->clearBoard();
     playerController = playerOne;
     while(playerController != endGame){
 
-        getActualColumn();
+        this->getActualColumn();
         std::cout << "actual column: "<< actualColumn << std::endl;
-        this->updateBoard(playerController);
-        this->printBoard();
-        if(this->checkWin()){
-            break;
+        if(!invalidInput){
+            this->updateBoard(playerController);
+            this->printBoard();
+            if(this->checkWin()){
+                break;
+            }
+            if(this->isDraw()){
+                break;
+            }
         }
-        if(this->isDraw()){
-            break;
-        }
-        if(playerController == playerOne){
-            playerController = playerTwo;
-        }else{
-            playerController = playerOne;
-        }
+        invalidInput = false;
+        (playerController == playerOne)? playerController = playerTwo : playerController = playerOne;
     }
 
 }
@@ -104,14 +112,15 @@ void game::printBoard(){
 
 void game::updateBoard(int playerController){
     int row = 1;
-    while(row < rows - 1 && board[row + 1][actualColumn] != playerOne && board[row + 1][actualColumn] != playerTwo){
+    while(row < rows && board[row][actualColumn] == empty){
         board[row - 1][actualColumn] = empty;
         board[row][actualColumn] = playerController;
         this->printGraphicalBoard();
-        al_rest(.15);
+        al_rest(.05);
         row ++;
     }
-    actualRow = row;
+    actualRow = --row;
+    std::cout << "[" << row << "," << actualColumn << "]" << std::endl;
 }
 
 void game::getActualColumn(){
@@ -141,10 +150,13 @@ void game::getActualColumn(){
                     actualColumn = 5;
                 }else if(mouseState.x > 540 && mouseState.x < 630){
                     actualColumn = 6;
+                }else if(mouseState.x > 630){
+                    al_show_native_message_box(display, "Invalid input", "WARNING", "click on the board", NULL,
+                     ALLEGRO_MESSAGEBOX_WARN);
+                    (playerController == playerOne)? playerController = playerTwo : playerController = playerOne;
+                    invalidInput = true;
                 }
         }
-
-
 }
 
 bool game::checkWin(){
@@ -164,8 +176,9 @@ bool game::checkWin(){
         horizontal++;
     }
     if(horizontal >= 4){
-        al_show_native_message_box(display, "Exiting game", "WARNING", "pleyer won", NULL,
-         ALLEGRO_MESSAGEBOX_WARN | ALLEGRO_MESSAGEBOX_YES_NO);
+        this->printGraphicalBoard();
+        al_show_native_message_box(display, "Exiting game", "WARNING", "horizontal win", NULL,
+         ALLEGRO_MESSAGEBOX_WARN);
         return true;
     }
 
@@ -174,15 +187,16 @@ bool game::checkWin(){
         vertical ++;
     }
 
-    auxRow = auxColumn;
+    auxRow = actualRow;
 
     while(board[auxRow - 1][actualColumn] == playerController && auxRow > 0){
         auxRow --;
         vertical ++;
     }
     if(vertical >= 4){
-        al_show_native_message_box(display, "Exiting game", "WARNING", "player won", NULL,
-         ALLEGRO_MESSAGEBOX_WARN | ALLEGRO_MESSAGEBOX_YES_NO);
+        this->printGraphicalBoard();
+        al_show_native_message_box(display, "Exiting game", "WARNING", "vertical win", NULL,
+         ALLEGRO_MESSAGEBOX_WARN);
         return true;
     }
 
@@ -205,8 +219,9 @@ bool game::checkWin(){
     }
 
     if(diagonal >= 4){
-        al_show_native_message_box(display, "Exiting game", "WARNING", "player won", NULL,
-         ALLEGRO_MESSAGEBOX_WARN | ALLEGRO_MESSAGEBOX_YES_NO);
+        this->printGraphicalBoard();
+        al_show_native_message_box(display, "Exiting game", "WARNING", "diagonal win", NULL,
+         ALLEGRO_MESSAGEBOX_WARN);
         return true;
     }
 
@@ -221,6 +236,7 @@ bool game::checkWin(){
 
     auxColumn = actualColumn;
     auxRow = actualRow;
+    diagonal = 1;
 
     while(auxColumn > 0 && auxRow < rows - 1 && board[auxRow + 1][auxColumn - 1] == playerController){
         auxColumn--;
@@ -229,8 +245,9 @@ bool game::checkWin(){
     }
 
     if(diagonal >= 4){
-        al_show_native_message_box(display, "Exiting game", "WARNING", "player won", NULL,
-         ALLEGRO_MESSAGEBOX_WARN | ALLEGRO_MESSAGEBOX_YES_NO);
+        this->printGraphicalBoard();
+        al_show_native_message_box(display, "Exiting game", "WARNING", "diagonal win", NULL,
+         ALLEGRO_MESSAGEBOX_WARN);
         return true;
     }
 
@@ -239,7 +256,13 @@ bool game::checkWin(){
 }
 
 void game::changeBackground(){
+    al_rest(.15);
     al_draw_bitmap(background,0,0,0);
+    if(playerController == playerOne){
+        al_draw_bitmap(playerTurnUnselected,631,0,0);
+    }else{
+        al_draw_bitmap(computerTurnUnselected,631,0,0);
+    }
     al_flip_display();
 }
 
@@ -258,6 +281,11 @@ void game::printGraphicalBoard(){
 
         }
 
+    }
+    if(playerController == playerOne){
+        al_draw_bitmap(playerTurnUnselected,631,2,0);
+    }else{
+        al_draw_bitmap(computerTurnUnselected,631,0,0);
     }
     al_flip_display();
 }
