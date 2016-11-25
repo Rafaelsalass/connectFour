@@ -27,7 +27,7 @@ class game{
     void clearBoard();
     void printBoard();
     void updateBoard(int playerController);
-    void getActualColumn();
+    bool getActualColumn();
     bool checkWin();
     ALLEGRO_BITMAP* background;
     ALLEGRO_BITMAP* playerOnePeg;
@@ -37,6 +37,7 @@ class game{
     ALLEGRO_BITMAP* playerTurnUnselected;
     ALLEGRO_BITMAP* computerTurnSelected;
     ALLEGRO_BITMAP* computerTurnUnselected;
+    ALLEGRO_BITMAP* instructions;
     void printGraphicalBoard();
     void changeBackground();
     bool isDraw();
@@ -56,26 +57,24 @@ game::game(ALLEGRO_DISPLAY* display){
     computerTurnUnselected = al_load_bitmap("gameGraphics/computerTurnUnselected.png");
     playerTurnSelected = al_load_bitmap("gameGraphics/playerTurnSelected.png");
     playerTurnUnselected = al_load_bitmap("gameGraphics/playerTurnUnselected.png");
+    instructions = al_load_bitmap("gameGraphics/instructions.png");
     invalidInput = false;
     this->display = display;
     startGame();
 }
 
 void game::startGame(){
-    if(! al_resize_display(display, widthPixels, heightPixels)){
-        std::cout << "can't resize" << std::endl;
-    }
-
     this->changeBackground();
-
     this->clearBoard();
+
     playerController = playerOne;
     while(playerController != endGame){
 
-        this->getActualColumn();
+        if(this->getActualColumn()){
+            this->updateBoard(playerController);
+        }
         std::cout << "actual column: "<< actualColumn << std::endl;
         if(!invalidInput){
-            this->updateBoard(playerController);
             this->printBoard();
             if(this->checkWin()){
                 break;
@@ -83,9 +82,10 @@ void game::startGame(){
             if(this->isDraw()){
                 break;
             }
+            (playerController == playerOne)? playerController = playerTwo : playerController = playerOne;
         }
         invalidInput = false;
-        (playerController == playerOne)? playerController = playerTwo : playerController = playerOne;
+
     }
 
 }
@@ -112,6 +112,11 @@ void game::printBoard(){
 
 void game::updateBoard(int playerController){
     int row = 1;
+    if(board[row][actualColumn] != empty){
+        al_show_native_message_box(display, "Invalid input", "WARNING", "column is already full", NULL,
+         ALLEGRO_MESSAGEBOX_WARN);
+         invalidInput = true;
+    }
     while(row < rows && board[row][actualColumn] == empty){
         board[row - 1][actualColumn] = empty;
         board[row][actualColumn] = playerController;
@@ -123,7 +128,7 @@ void game::updateBoard(int playerController){
     std::cout << "[" << row << "," << actualColumn << "]" << std::endl;
 }
 
-void game::getActualColumn(){
+bool game::getActualColumn(){
     ALLEGRO_EVENT_QUEUE* eventQueue = NULL;
     ALLEGRO_EVENT event;
     eventQueue = al_create_event_queue();
@@ -134,29 +139,40 @@ void game::getActualColumn(){
     }
     al_destroy_event_queue(eventQueue);
 
-        if(event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_get_mouse_state(&mouseState);
                 if(mouseState.x > 0 && mouseState.x < 90){
                     actualColumn = 0;
                 }else if(mouseState.x > 90 && mouseState.x < 180){
                     actualColumn = 1;
+                    return true;
                 }else if(mouseState.x > 180 && mouseState.x < 270){
                     actualColumn = 2;
+                    return true;
                 }else if(mouseState.x > 270 && mouseState.x < 360){
                     actualColumn = 3;
+                    return true;
                 }else if(mouseState.x > 360 && mouseState.x < 450){
                     actualColumn = 4;
+                    return true;
                 }else if(mouseState.x > 450 && mouseState.x < 540){
                     actualColumn = 5;
+                    return true;
                 }else if(mouseState.x > 540 && mouseState.x < 630){
                     actualColumn = 6;
+                    return true;
                 }else if(mouseState.x > 630){
+                    if(mouseState.x > 780 && mouseState.x < 935 && mouseState.y > 355 && mouseState.y < 400){
+                        al_show_native_message_box(display, "Exiting game", "WARNING",
+                        "exiting current game", NULL, ALLEGRO_MESSAGEBOX_WARN);
+                        invalidInput = true;
+                        playerController = endGame;
+                        return false;
+                    }
                     al_show_native_message_box(display, "Invalid input", "WARNING", "click on the board", NULL,
                      ALLEGRO_MESSAGEBOX_WARN);
-                    (playerController == playerOne)? playerController = playerTwo : playerController = playerOne;
                     invalidInput = true;
+                    return false;
                 }
-        }
 }
 
 bool game::checkWin(){
@@ -257,6 +273,13 @@ bool game::checkWin(){
 
 void game::changeBackground(){
     al_rest(.15);
+    al_draw_bitmap(instructions, -85, 0, 0);
+    al_flip_display();
+    al_rest(4);
+    if(! al_resize_display(display, widthPixels, heightPixels)){
+        std::cout << "can't resize" << std::endl;
+    }
+    al_rest(.01);
     al_draw_bitmap(background,0,0,0);
     if(playerController == playerOne){
         al_draw_bitmap(playerTurnUnselected,631,0,0);
