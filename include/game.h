@@ -12,6 +12,8 @@
 #define pegWidth 90
 #define pegHeight 90
 
+#include <time.h>
+
 class game{
     public:
     game();
@@ -40,6 +42,7 @@ class game{
     ALLEGRO_BITMAP* instructions;
     void printGraphicalBoard();
     void changeBackground();
+    int computerMove();
     bool isDraw();
     bool invalidInput;
 };
@@ -67,10 +70,18 @@ void game::startGame(){
     this->changeBackground();
     this->clearBoard();
 
-    playerController = playerOne;
+    srand( time(NULL) );
+    playerController = rand() % 1 + 1;
+    std::cout << playerController << std::endl;
+
     while(playerController != endGame){
 
-        if(this->getActualColumn()){
+        if(playerController == playerOne){
+            if(this->getActualColumn()){
+                this->updateBoard(playerController);
+            }
+        }else if(playerController == playerTwo){
+            actualColumn = this->computerMove();
             this->updateBoard(playerController);
         }
         std::cout << "actual column: "<< actualColumn << std::endl;
@@ -314,9 +325,6 @@ void game::printGraphicalBoard(){
 }
 
 bool game::isDraw(){
-
-
-
     int x,y;
     for(x = 1; x < rows; x++){
         for(y = 0; y < column; y++){
@@ -327,6 +335,10 @@ bool game::isDraw(){
     }
     al_show_native_message_box(display, "WARNING", "DRAW", "No one wins this game", NULL, ALLEGRO_MESSAGEBOX_WARN);
     return true;
+}
+
+int game::computerMove(){
+    return 2;
 }
 
 #endif
