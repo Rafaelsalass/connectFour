@@ -314,6 +314,9 @@ void game::printGraphicalBoard(){
 }
 
 bool game::isDraw(){
+
+
+
     int x,y;
     for(x = 1; x < rows; x++){
         for(y = 0; y < column; y++){
