@@ -11,10 +11,10 @@
 	"game.h"
 	<iostream>
 
-1480605487 /home/rafael/Cpp/dataStructure/allegroProjects/testProject/include/game.h
+1480622972 /home/rafael/Cpp/dataStructure/allegroProjects/testProject/include/game.h
 	<time.h>
 	<vector>
 	"boardStatus.h"
 
-1480545025 /home/rafael/Cpp/dataStructure/allegroProjects/testProject/include/boardStatus.h
+1480627244 /home/rafael/Cpp/dataStructure/allegroProjects/testProject/include/boardStatus.h
 

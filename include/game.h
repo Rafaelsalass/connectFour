@@ -47,6 +47,7 @@ class game{
     bool isDraw();
     bool invalidInput;
     std::vector<boardStatus> possibleMoves(boardStatus newBoardStatus, int playerController);
+    int alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player);
 };
 
 game::game(){
@@ -343,7 +344,6 @@ int game::computerMove(){
     std::vector<boardStatus> moves;
     boardStatus newBoardStatus;
     system("clear");
-    system("atom .");
     newBoardStatus.setBoard(board);
     moves = this->possibleMoves(newBoardStatus, playerTwo);
 
@@ -374,6 +374,10 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
     }
 
     return moves;
+
+}
+
+int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player){
 
 }
 #endif
