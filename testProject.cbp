@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add library="../../../../../../usr/lib/x86_64-linux-gnu/liballegro.so" />
@@ -36,6 +37,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -46,6 +48,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/boardStatus.h" />
 		<Unit filename="include/game.h" />
 		<Unit filename="include/menu.h" />
 		<Unit filename="main.cpp" />

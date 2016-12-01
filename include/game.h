@@ -8,11 +8,12 @@
 #define playerOne 1
 #define playerTwo 2
 #define endGame 3
-#define empty 0
 #define pegWidth 90
 #define pegHeight 90
 
 #include <time.h>
+#include <vector>
+#include "boardStatus.h"
 
 class game{
     public:
@@ -27,7 +28,7 @@ class game{
     ALLEGRO_DISPLAY* display;
     ALLEGRO_MOUSE_STATE mouseState;
     void clearBoard();
-    void printBoard();
+    void printBoard(boardStatus newBoardStatus);
     void updateBoard(int playerController);
     bool getActualColumn();
     bool checkWin();
@@ -45,6 +46,7 @@ class game{
     int computerMove();
     bool isDraw();
     bool invalidInput;
+    std::vector<boardStatus> possibleMoves(boardStatus newBoardStatus, int playerController);
 };
 
 game::game(){
@@ -52,6 +54,7 @@ game::game(){
 }
 
 game::game(ALLEGRO_DISPLAY* display){
+    srand( time(0) );
     background = al_load_bitmap("gameGraphics/background.png");
     playerOnePeg = al_load_bitmap("gameGraphics/playerOne.png");
     playerTwoPeg = al_load_bitmap("gameGraphics/playerTwo.png");
@@ -70,23 +73,22 @@ void game::startGame(){
     this->changeBackground();
     this->clearBoard();
 
-    srand( time(NULL) );
     playerController = rand() % 1 + 1;
-    std::cout << playerController << std::endl;
 
-    while(playerController != endGame){
+    while(playerController < endGame){
 
         if(playerController == playerOne){
+
             if(this->getActualColumn()){
                 this->updateBoard(playerController);
             }
+
         }else if(playerController == playerTwo){
             actualColumn = this->computerMove();
             this->updateBoard(playerController);
         }
         std::cout << "actual column: "<< actualColumn << std::endl;
         if(!invalidInput){
-            this->printBoard();
             if(this->checkWin()){
                 break;
             }
@@ -111,11 +113,11 @@ void game::clearBoard(){
 
 }
 
-void game::printBoard(){
+void game::printBoard(boardStatus newBoardStatus){
     int i, j;
     for (i = 0; i < rows; i++){
         for (j = 0; j < column; j ++){
-            std::cout << board[i][j] << "  ";
+            std::cout << newBoardStatus.board[i][j] << "  ";
         }
         std::cout << std::endl;
     }
@@ -123,20 +125,20 @@ void game::printBoard(){
 
 void game::updateBoard(int playerController){
     int row = 1;
-    if(board[row][actualColumn] != empty){
+    if(board[row][actualColumn] != 0){
         al_show_native_message_box(display, "Invalid input", "WARNING", "column is already full", NULL,
          ALLEGRO_MESSAGEBOX_WARN);
          invalidInput = true;
     }
-    while(row < rows && board[row][actualColumn] == empty){
-        board[row - 1][actualColumn] = empty;
+    while(row < rows && board[row][actualColumn] == 0){
+        board[row - 1][actualColumn] = 0;
         board[row][actualColumn] = playerController;
         this->printGraphicalBoard();
         al_rest(.05);
         row ++;
     }
     actualRow = --row;
-    std::cout << "[" << row << "," << actualColumn << "]" << std::endl;
+    //std::cout << "[" << row << "," << actualColumn << "]" << std::endl;
 }
 
 bool game::getActualColumn(){
@@ -293,9 +295,9 @@ void game::changeBackground(){
     al_rest(.01);
     al_draw_bitmap(background,0,0,0);
     if(playerController == playerOne){
-        al_draw_bitmap(playerTurnUnselected,631,0,0);
-    }else{
         al_draw_bitmap(computerTurnUnselected,631,0,0);
+    }else{
+        al_draw_bitmap(playerTurnUnselected,631,0,0);
     }
     al_flip_display();
 }
@@ -317,9 +319,9 @@ void game::printGraphicalBoard(){
 
     }
     if(playerController == playerOne){
-        al_draw_bitmap(playerTurnUnselected,631,2,0);
+        al_draw_bitmap(computerTurnUnselected,631,2,0);
     }else{
-        al_draw_bitmap(computerTurnUnselected,631,0,0);
+        al_draw_bitmap(playerTurnUnselected,631,0,0);
     }
     al_flip_display();
 }
@@ -328,7 +330,7 @@ bool game::isDraw(){
     int x,y;
     for(x = 1; x < rows; x++){
         for(y = 0; y < column; y++){
-            if(board[x][y] == empty){
+            if(board[x][y] == 0){
                 return false;
             }
         }
@@ -338,7 +340,40 @@ bool game::isDraw(){
 }
 
 int game::computerMove(){
-    return 2;
+    std::vector<boardStatus> moves;
+    boardStatus newBoardStatus;
+    system("clear");
+    system("atom .");
+    newBoardStatus.setBoard(board);
+    moves = this->possibleMoves(newBoardStatus, playerTwo);
+
+    for(int h = 0; h < moves.size(); h++){
+        std::cout << "Played column: " << moves[h].playedColumn << std::endl;
+        this->printBoard(moves[h]);
+    }
+    return rand() % 7;
 }
 
+
+std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int player){
+    std::vector<boardStatus> moves;
+    boardStatus aux;
+    aux = newBoardStatus;
+    int j = rows - 1;
+    for(int i = 0; i < column; i++){
+        while(aux.board[j][i] != 0 && j > 0){
+            j--;
+        }
+        if(j != 0){
+            aux.board[j][i] = player;
+            aux.playedColumn = i;
+            moves.push_back(aux);
+        }
+        aux = newBoardStatus;
+        j = rows - 1;
+    }
+
+    return moves;
+
+}
 #endif
