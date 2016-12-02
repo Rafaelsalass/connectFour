@@ -10,6 +10,8 @@
 #define endGame 3
 #define pegWidth 90
 #define pegHeight 90
+#define plusInfinity 999999
+#define lessInfinity 999999
 
 #include <time.h>
 #include <vector>
@@ -47,7 +49,7 @@ class game{
     bool isDraw();
     bool invalidInput;
     std::vector<boardStatus> possibleMoves(boardStatus newBoardStatus, int playerController);
-    int alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player);
+    int alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player, int deep);
 };
 
 game::game(){
@@ -377,7 +379,7 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
 
 }
 
-int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player){
+int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player, int deep){
 
 }
 #endif
