@@ -291,8 +291,8 @@ void game::changeBackground(){
     al_rest(.15);
     al_draw_bitmap(instructions, -85, 0, 0);
     al_flip_display();
-    al_rest(4);
-    if(! al_resize_display(display, widthPixels, heightPixels)){
+    al_rest(1);
+    if(! al_resize_display(display, 630, heightPixels)){
         std::cout << "can't resize" << std::endl;
     }
     al_rest(.01);
@@ -344,15 +344,14 @@ bool game::isDraw(){
 
 int game::computerMove(){
     std::vector<boardStatus> moves;
+    int score = 0;
     boardStatus newBoardStatus;
     system("clear");
     newBoardStatus.setBoard(board);
     moves = this->possibleMoves(newBoardStatus, playerTwo);
 
-    for(int h = 0; h < moves.size(); h++){
-        std::cout << "Played column: " << moves[h].playedColumn << std::endl;
-        this->printBoard(moves[h]);
-    }
+    score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 400);
+    std::cout << score << std::endl;
     return rand() % 7;
 }
 
@@ -381,17 +380,22 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
 
 int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPlayer, int deep){
     std::vector<boardStatus> newMoves;
+    newMoves = this->possibleMoves(newBoardStatus, playerOne);
     int bestValue;
     int childValue;
+    std::cout << "entro" << std::endl;
 
     if(newMoves.size() == 0 || deep == 0){
-        bestValue = newBoardStatus.calculatedScore();
+        newBoardStatus.calculatedScore();
+        bestValue = newBoardStatus.score;
     }else if(maxPlayer){
         newMoves = this->possibleMoves(newBoardStatus, playerOne);
         bestValue = alpha;
         for (int i = 0; i < newMoves.size(); i ++){
-            childValue = alphaBeta(newMoves[i], bestValue, beta, false, deep - 1);
-            bestValue = (childValue > bestValue)? childValue : bestValue;
+            childValue = alphaBeta(newMoves[i], bestValue, beta, false, --deep);
+            if(childValue > bestValue){
+                bestValue = childValue;
+            }
             if(beta <= bestValue){
                 break;
             }
@@ -400,8 +404,10 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
         newMoves = this->possibleMoves(newBoardStatus, playerTwo);
         bestValue = beta;
         for (int j = 0; j < newMoves.size(); j++){
-            childValue = alphaBeta(newMoves[i], alpha, bestValue, true, deep - 1);
-            bestValue = (childValue < bestValue)? childValue : bestValue;
+            childValue = alphaBeta(newMoves[j], alpha, bestValue, true, --deep);
+            if(childValue > bestValue){
+                bestValue = childValue;
+            }
             if(bestValue <= alpha){
                 break;
             }
