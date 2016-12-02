@@ -379,7 +379,35 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
 
 }
 
-int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player, int deep){
+int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPlayer, int deep){
+    std::vector<boardStatus> newMoves;
+    int bestValue;
+    int childValue;
 
+    if(newMoves.size() == 0 || deep == 0){
+        bestValue = newBoardStatus.calculatedScore();
+    }else if(maxPlayer){
+        newMoves = this->possibleMoves(newBoardStatus, playerOne);
+        bestValue = alpha;
+        for (int i = 0; i < newMoves.size(); i ++){
+            childValue = alphaBeta(newMoves[i], bestValue, beta, false, deep - 1);
+            bestValue = (childValue > bestValue)? childValue : bestValue;
+            if(beta <= bestValue){
+                break;
+            }
+        }
+    }else{
+        newMoves = this->possibleMoves(newBoardStatus, playerTwo);
+        bestValue = beta;
+        for (int j = 0; j < newMoves.size(); j++){
+            childValue = alphaBeta(newMoves[i], alpha, bestValue, true, deep - 1);
+            bestValue = (childValue < bestValue)? childValue : bestValue;
+            if(bestValue <= alpha){
+                break;
+            }
+        }
+    }
+
+    return bestValue;
 }
 #endif
