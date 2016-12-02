@@ -11,7 +11,7 @@
 #define pegWidth 90
 #define pegHeight 90
 #define plusInfinity 999999
-#define lessInfinity 999999
+#define lessInfinity -999999
 
 #include <time.h>
 #include <vector>
@@ -350,7 +350,7 @@ int game::computerMove(){
     newBoardStatus.setBoard(board);
     moves = this->possibleMoves(newBoardStatus, playerTwo);
 
-    score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 400);
+    score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 5);
     std::cout << score << std::endl;
     return rand() % 7;
 }
@@ -383,37 +383,57 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
     newMoves = this->possibleMoves(newBoardStatus, playerOne);
     int bestValue;
     int childValue;
-    std::cout << "entro" << std::endl;
 
-    if(newMoves.size() == 0 || deep == 0){
+    if(newMoves.size() == 0 || deep <= 0){
+        std::cout << "newMoves.size() :" << newMoves.size()<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<std::endl;
+        //std::cin.get();
         newBoardStatus.calculatedScore();
         bestValue = newBoardStatus.score;
-    }else if(maxPlayer){
-        newMoves = this->possibleMoves(newBoardStatus, playerOne);
-        bestValue = alpha;
-        for (int i = 0; i < newMoves.size(); i ++){
-            childValue = alphaBeta(newMoves[i], bestValue, beta, false, --deep);
-            if(childValue > bestValue){
-                bestValue = childValue;
+    }else {
+        std::cout << "maxPlayer: " << maxPlayer<<" deep: "<<deep<<std::endl;
+        //std::cin.get();
+        if(maxPlayer){
+            newMoves.clear();
+            newMoves = this->possibleMoves(newBoardStatus, playerOne);
+            bestValue = alpha;
+            for (int i = 0; i < newMoves.size(); i ++){
+                std::cout << "i: " << i<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
+                newMoves[i].print();
+                //std::cin.get();
+                childValue = alphaBeta(newMoves[i], bestValue, beta, false, --deep);
+                std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
+                if(childValue > bestValue){
+                    std::cout << "ENTRO"<<std::endl;
+                    bestValue = childValue;
+                    std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
+                }
+                if(beta <= bestValue){
+                    std::cout << "bestValue: "<<bestValue<<" beta: "<<beta<<std::endl;
+                    break;
+                }
             }
-            if(beta <= bestValue){
-                break;
-            }
-        }
-    }else{
-        newMoves = this->possibleMoves(newBoardStatus, playerTwo);
-        bestValue = beta;
-        for (int j = 0; j < newMoves.size(); j++){
-            childValue = alphaBeta(newMoves[j], alpha, bestValue, true, --deep);
-            if(childValue > bestValue){
-                bestValue = childValue;
-            }
-            if(bestValue <= alpha){
-                break;
+        }else{
+            newMoves.clear();
+            newMoves = this->possibleMoves(newBoardStatus, playerTwo);
+            bestValue = beta;
+            for (int j = 0; j < newMoves.size(); j++){
+                std::cout << "j: " << j<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
+                newMoves[j].print();
+                //std::cin.get();
+                childValue = alphaBeta(newMoves[j], alpha, bestValue, true, --deep);
+                std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
+                if(childValue < bestValue){
+                    std::cout << "ENTRO"<<std::endl;
+                    bestValue = childValue;
+                    std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
+                }
+                if(bestValue <= alpha){
+                    std::cout << "bestValue: "<<bestValue<<" alpha: "<<alpha<<std::endl;
+                    break;
+                }
             }
         }
     }
-
     return bestValue;
 }
 #endif
