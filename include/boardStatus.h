@@ -68,105 +68,175 @@ void boardStatus::calculatedScore(){
 }
 
 int boardStatus::checkSurroundings(int x, int j, int player){
-    int cont=0,score=0;
-    //vertical
+    int cont=0,score=0,b=0;
+    //vertical abajo
     for(int i=1;i<=3;i++){
-        if(board[x+i][j]!=player && board[x+i][j]!=0 || board[x-1][j]!=player && board[x-1][j]!=0) break;
-        if(board[x+i][j]==player && x+i<= rows-1){
-            cont++;
+        if(x+i<= rows-1){
+            if(board[x-1][j]!=player && board[x-1][j]!=0){
+                b=1;
+                break;
+            }
+            if(board[x+i][j]!=player && board[x+i][j]!=0 ){
+                b=1;
+                break;
+            }
+            if(board[x+i][j]==player){
+                cont++;
+            }
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Vertical abajo Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Vertical abajo Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
     cont=0;
+    b=0;
+    //vertical arriba
+    for(int i=1;i<=3;i++){
+        if(x-i>= 0){
+            if(board[x-i][j]!=player && board[x-i][j]!=0 ){
+                b=1;
+                break;
+            }
+            if(board[x-i][j]==player){
+                cont++;
+            }
+
+        }
+    }
+    if(cont==3 && b==0){
+        std::cout<<"Vertical arriba Score: "<<score<<" cont : "<<cont<<std::endl;
+        score+=100;
+    }
+    if(cont==2 && b==0){
+        std::cout<<"Vertical arriba Score: "<<score<<" cont : "<<cont<<std::endl;
+        score+=50;
+    }
+    cont=0;
+    b=0;
     //Horizontal derecha
     for(int i=1;i<=3;i++){
-        if(board[x][j+i]!=player && board[x][j+i]!=0) break;
-        if(board[x][j+i]==player && j+i<= column-1){
+        if(board[x][j+i]!=player && board[x][j+i]!=0 && j+i<= column-1){
+            b=1;
+            break;
+        }
+        if(board[x][j+i]==player ){
             cont++;
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Horizontal derecha Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Horizontal derecha Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
     cont=0;
+    b=0;
     //Horizontal izquierda
     for(int i=1;i<=3;i++){
-        if(board[x][j-i]!=player && board[x][j-i]!=0) break;
-        if(board[x][j-i]==player && j-i >=0){
+        if(board[x][j-i]!=player && board[x][j-i]!=0 && j-i >=0){
+            b=1;
+            break;
+        }
+        if(board[x][j-i]==player ){
             cont++;
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Horizontal izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Horizontal izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
     cont=0;
+    b=0;
     //Diagonal arriba derecha
     for(int i=1;i<=3;i++){
-        if(board[x-i][j+i]!=player && board[x-i][j+i]!=0) break;
-        if(board[x-i][j+i]==player && x-i>=0 && j+i<=column-1){
+        if(board[x-i][j+i]!=player && board[x-i][j+i]!=0 && x-i>=0 && j+i<=column-1){
+            b=1;
+            break;
+        }
+        if(board[x-i][j+i]==player ){
             cont++;
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Diagonal arriba derecha Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Diagonal arriba derecha Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
     cont=0;
+    b=0;
     //Diagonal arriba izquierda
     for(int i=1;i<=3;i++){
-        if(board[x-i][j-i]!=player && board[x-i][j-i]!=0) break;
-        if(board[x-i][j-i]==player && x-i>=0 && j-i>=0){
+        if(board[x-i][j-i]!=player && board[x-i][j-i]!=0&& x-i>=0 && j-i>=0){
+            b=1;
+            break;
+        }
+        if(board[x-i][j-i]==player ){
             cont++;
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Diagonal arriba izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Diagonal arriba izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
-    cont=0;        cont=0;
+    cont=0;
+    b=0;       cont=0;
     //Diagonal abajo izquierda
     for(int i=1;i<=3;i++){
-        if(board[x+i][j-i]!=player && board[x+i][j-i]!=0) break;
-        if(board[x+i][j-i]==player && x+i<=rows-1 && j-i>=0){
+        if(board[x+i][j-i]!=player && board[x+i][j-i]!=0 && x+i<=rows-1 && j-i>=0){
+            b=1;
+            break;
+        }
+        if(board[x+i][j-i]==player ){
             cont++;
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Diagonal abajo izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Diagonal abajo izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
     cont=0;
+    b=0;
     //Diagonal abajo derecha
     for(int i=1;i<=3;i++){
-        if(board[x+i][j+i]!=player && board[x+i][j+i]!=0) break;
-        if(board[x+i][j+i]==player && x+i<=rows-1 && j+i<=column-1){
+        if(board[x+i][j+i]!=player && board[x+i][j+i]!=0 && x+i<=rows-1 && j+i<=column-1){
+            b=1; break;
+        }
+        if(board[x+i][j+i]==player ){
             cont++;
         }
     }
-    if(cont==3){
+    if(cont==3 && b==0){
+        std::cout<<"Diagonal abajo derecha Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=100;
     }
-    if(cont==2){
+    if(cont==2 && b==0){
+        std::cout<<"Diagonal abajo derecha Score: "<<score<<" cont : "<<cont<<std::endl;
         score+=50;
     }
     cont=0;
+    b=0;
     print();
     std::cout<< x <<" , "<< j <<" = "<< score <<std::endl;
     std::cin.get();
