@@ -49,7 +49,7 @@ class game{
     bool isDraw();
     bool invalidInput;
     std::vector<boardStatus> possibleMoves(boardStatus newBoardStatus, int playerController);
-    int alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player, int deep);
+    int alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player, int deep, boardStatus* toPlay);
 };
 
 game::game(){
@@ -292,7 +292,7 @@ void game::changeBackground(){
     al_draw_bitmap(instructions, -85, 0, 0);
     al_flip_display();
     al_rest(1);
-    if(! al_resize_display(display, 630, heightPixels)){
+    if(! al_resize_display(display, widthPixels, heightPixels)){
         std::cout << "can't resize" << std::endl;
     }
     al_rest(.01);
@@ -344,15 +344,18 @@ bool game::isDraw(){
 
 int game::computerMove(){
     std::vector<boardStatus> moves;
+    boardStatus toPlay;
+    toPlay.playedColumn = -1;
     int score = 0;
     boardStatus newBoardStatus;
     system("clear");
     newBoardStatus.setBoard(board);
     moves = this->possibleMoves(newBoardStatus, playerTwo);
 
-    score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 5);
+    score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 4, &toPlay);
     std::cout << score << std::endl;
-    return rand() % 7;
+    std::cout << "tiPlay playedColumn: "<< toPlay.playedColumn << std::endl;
+    return toPlay.playedColumn;
 }
 
 
@@ -378,37 +381,39 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
 
 }
 
-int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPlayer, int deep){
+int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPlayer, int deep, boardStatus* toPlay){
     std::vector<boardStatus> newMoves;
     newMoves = this->possibleMoves(newBoardStatus, playerOne);
     int bestValue;
     int childValue;
 
     if(newMoves.size() == 0 || deep <= 0){
-        std::cout << "newMoves.size() :" << newMoves.size()<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<std::endl;
+        //std::cout << "newMoves.size() :" << newMoves.size()<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<std::endl;
         //std::cin.get();
         newBoardStatus.calculatedScore();
         bestValue = newBoardStatus.score;
+
     }else {
-        std::cout << "maxPlayer: " << maxPlayer<<" deep: "<<deep<<std::endl;
+        //std::cout << "maxPlayer: " << maxPlayer<<" deep: "<<deep<<std::endl;
         //std::cin.get();
         if(maxPlayer){
             newMoves.clear();
             newMoves = this->possibleMoves(newBoardStatus, playerOne);
             bestValue = alpha;
             for (int i = 0; i < newMoves.size(); i ++){
-                std::cout << "i: " << i<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
-                newMoves[i].print();
+                //std::cout << "i: " << i<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
+                //newMoves[i].print();
                 //std::cin.get();
-                childValue = alphaBeta(newMoves[i], bestValue, beta, false, --deep);
-                std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
+                childValue = alphaBeta(newMoves[i], bestValue, beta, false, --deep, toPlay);
+                //std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
                 if(childValue > bestValue){
-                    std::cout << "ENTRO"<<std::endl;
+                    //std::cout << "ENTRO"<<std::endl;
                     bestValue = childValue;
-                    std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
+                    toPlay->playedColumn = newMoves[i].playedColumn;
+                    //std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
                 }
                 if(beta <= bestValue){
-                    std::cout << "bestValue: "<<bestValue<<" beta: "<<beta<<std::endl;
+                    //std::cout << "bestValue: "<<bestValue<<" beta: "<<beta<<std::endl;
                     break;
                 }
             }
@@ -417,18 +422,19 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
             newMoves = this->possibleMoves(newBoardStatus, playerTwo);
             bestValue = beta;
             for (int j = 0; j < newMoves.size(); j++){
-                std::cout << "j: " << j<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
-                newMoves[j].print();
+                //std::cout << "j: " << j<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
+                //newMoves[j].print();
                 //std::cin.get();
-                childValue = alphaBeta(newMoves[j], alpha, bestValue, true, --deep);
-                std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
+                childValue = alphaBeta(newMoves[j], alpha, bestValue, true, --deep, toPlay);
+                //std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
                 if(childValue < bestValue){
-                    std::cout << "ENTRO"<<std::endl;
+                    //std::cout << "ENTRO"<<std::endl;
                     bestValue = childValue;
-                    std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
+
+                    //std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
                 }
                 if(bestValue <= alpha){
-                    std::cout << "bestValue: "<<bestValue<<" alpha: "<<alpha<<std::endl;
+                    //std::cout << "bestValue: "<<bestValue<<" alpha: "<<alpha<<std::endl;
                     break;
                 }
             }
