@@ -268,7 +268,6 @@ bool game::checkWin(){
 
     auxColumn = actualColumn;
     auxRow = actualRow;
-    diagonal = 1;
 
     while(auxColumn > 0 && auxRow < rows - 1 && board[auxRow + 1][auxColumn - 1] == playerController){
         auxColumn--;
