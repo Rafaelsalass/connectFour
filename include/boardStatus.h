@@ -90,11 +90,11 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
        // std::cout<<"Vertical abajo Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=250;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Vertical abajo Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=150;
+        score+=250;
     }
     cont=0;
     b=0;
@@ -113,11 +113,11 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Vertical arriba Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=250;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Vertical arriba Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=150;
+        score+=250;
     }
     cont=0;
     b=0;
@@ -133,11 +133,11 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Horizontal derecha Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=200;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Horizontal derecha Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=150;
+        score+=250;
     }
     cont=0;
     b=0;
@@ -153,11 +153,11 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Horizontal izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=200;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Horizontal izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=150;
+        score+=250;
     }
     cont=0;
     b=0;
@@ -173,7 +173,7 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Diagonal arriba derecha Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=100;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Diagonal arriba derecha Score: "<<score<<" cont : "<<cont<<std::endl;
@@ -193,7 +193,7 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Diagonal arriba izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=100;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Diagonal arriba izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
@@ -213,7 +213,7 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Diagonal abajo izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=100;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Diagonal abajo izquierda Score: "<<score<<" cont : "<<cont<<std::endl;
@@ -232,7 +232,7 @@ int boardStatus::checkSurroundings(int x, int j, int player){
     }
     if(cont==3 && b==0){
         //std::cout<<"Diagonal abajo derecha Score: "<<score<<" cont : "<<cont<<std::endl;
-        score+=100;
+        score+=500;
     }
     if(cont==2 && b==0){
         //std::cout<<"Diagonal abajo derecha Score: "<<score<<" cont : "<<cont<<std::endl;
