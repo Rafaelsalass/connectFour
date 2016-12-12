@@ -34,6 +34,7 @@ class game{
     void updateBoard(int playerController);
     bool getActualColumn();
     bool checkWin();
+    bool checkWin(int newRow, int newColumn, int playerController, boardStatus newBoardStatus);
     ALLEGRO_BITMAP* background;
     ALLEGRO_BITMAP* playerOnePeg;
     ALLEGRO_BITMAP* playerTwoPeg;
@@ -50,6 +51,7 @@ class game{
     bool invalidInput;
     std::vector<boardStatus> possibleMoves(boardStatus newBoardStatus, int playerController);
     int alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool player, int deep, boardStatus* toPlay);
+    bool terminalState(boardStatus newBoardState, boardStatus* toPlay, int playerController);
 };
 
 game::game(){
@@ -259,7 +261,7 @@ bool game::checkWin(){
 
     diagonal = 1;
     auxColumn = actualColumn;
-    auxRow = auxRow;
+    auxRow = actualRow;
     while(auxColumn < column - 1 && auxRow >0 && board[auxRow - 1][auxColumn + 1] == playerController){
         auxColumn++;
         auxRow--;
@@ -284,6 +286,90 @@ bool game::checkWin(){
 
     return false;
 
+}
+
+bool game::checkWin(int newRow, int newColumn, int player, boardStatus newBoardStatus){
+    int horizontal = 1;
+    int vertical = 1;
+    int diagonal = 1;
+    int auxColumn = newColumn;
+    int auxRow = newRow;
+
+    while(newBoardStatus.board[newRow][auxColumn + 1] == player && auxColumn < column -1){
+        auxColumn++;
+        horizontal++;
+    }
+
+    auxColumn = newColumn;
+
+    while(newBoardStatus.board[newRow][auxColumn - 1] == player && auxColumn > 0){
+        auxColumn--;
+        horizontal++;
+    }
+    if(horizontal >= 4){
+        return true;
+    }
+
+    while(newBoardStatus.board[auxRow + 1][newColumn] == player && auxRow < rows - 1){
+        auxRow ++;
+        vertical ++;
+    }
+
+    auxRow = newRow;
+
+    while(newBoardStatus.board[auxRow - 1][newColumn] == player && auxRow > 0){
+        auxRow --;
+        vertical ++;
+    }
+    if(vertical >= 4){
+        return true;
+    }
+
+    auxColumn = newColumn;
+    auxRow = newRow;
+
+    while(auxColumn < column - 1 && auxRow < rows - 1 && newBoardStatus.board[auxRow + 1][auxColumn + 1] == player){
+        auxColumn++;
+        auxRow++;
+        diagonal++;
+    }
+
+    auxColumn = newColumn;
+    auxRow = newRow;
+
+    while(auxColumn > 0 && auxRow > 0 && newBoardStatus.board[auxRow - 1][auxColumn - 1] == player){
+        auxColumn--;
+        auxRow--;
+        diagonal++;
+    }
+
+    if(diagonal >= 4){
+        return true;
+    }
+
+    diagonal = 1;
+    auxColumn = newColumn;
+    auxRow = newRow;
+    while(auxColumn < column - 1 && auxRow >0 && newBoardStatus.board[auxRow - 1][auxColumn + 1] == player){
+        auxColumn++;
+        auxRow--;
+        diagonal++;
+    }
+
+    auxColumn = newColumn;
+    auxRow = newRow;
+
+    while(auxColumn > 0 && auxRow < rows - 1 && newBoardStatus.board[auxRow + 1][auxColumn - 1] == player){
+        auxColumn--;
+        auxRow++;
+        diagonal++;
+    }
+
+    if(diagonal >= 4){
+        return true;
+    }
+
+    return false;
 }
 
 void game::changeBackground(){
@@ -347,14 +433,26 @@ int game::computerMove(){
     toPlay.playedColumn = -1;
     int score = 0;
     boardStatus newBoardStatus;
-    system("clear");
     newBoardStatus.setBoard(board);
-    moves = this->possibleMoves(newBoardStatus, playerTwo);
 
-    score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 4, &toPlay);
-    std::cout << score << std::endl;
-    std::cout << "tiPlay playedColumn: "<< toPlay.playedColumn << std::endl;
-    return toPlay.playedColumn;
+    if(this->terminalState(newBoardStatus, &toPlay, playerTwo)){
+        std::cout << "Terminal move for computer" << std::endl;
+        std::cout << "toPlay playedColumn: "<< toPlay.playedColumn << std::endl;
+        std::cout << std::endl << std::endl;
+        return toPlay.playedColumn;
+    }else if(this->terminalState(newBoardStatus, &toPlay, playerOne)){
+        std::cout << "Terminal move for human" << std::endl;
+        std::cout << "toPlay playedColumn: "<< toPlay.playedColumn << std::endl;
+        std::cout << std::endl << std::endl;
+        return toPlay.playedColumn;
+    }else{
+        std::cout << "aplying alphaBeta" << std::endl;
+        score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 12, &toPlay);
+        std::cout << score << std::endl;
+        std::cout << "toPlay playedColumn: "<< toPlay.playedColumn << std::endl;
+        std::cout << std::endl << std::endl;
+        return toPlay.playedColumn;
+    }
 }
 
 
@@ -370,6 +468,7 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
         if(j != 0){
             aux.board[j][i] = player;
             aux.playedColumn = i;
+            aux.playedRow = j;
             moves.push_back(aux);
         }
         aux = newBoardStatus;
@@ -440,5 +539,20 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
         }
     }
     return bestValue;
+}
+
+bool game::terminalState(boardStatus newBoardStatus, boardStatus* toplay, int player){
+    std::vector<boardStatus> moves;
+    moves = this->possibleMoves(newBoardStatus, playerController);
+
+    for(int x = 0; x < moves.size(); x++){
+        if(this->checkWin(moves[x].playedRow, moves[x].playedColumn, player, moves[x])){
+            toplay->playedColumn = moves[x].playedColumn;
+            return true;
+        }
+    }
+
+    return false;
+
 }
 #endif

@@ -14,6 +14,7 @@ class boardStatus
         int board[rows][column];
         int score;
         int playedColumn;
+        int playedRow;
         void setBoard(int board[rows][column]);
         void calculatedScore();
         void print();
