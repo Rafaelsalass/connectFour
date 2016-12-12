@@ -447,7 +447,7 @@ int game::computerMove(){
         return toPlay.playedColumn;
     }else{
         std::cout << "aplying alphaBeta" << std::endl;
-        score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 12, &toPlay);
+        score = this->alphaBeta(newBoardStatus, lessInfinity, plusInfinity, true, 4, &toPlay);
         std::cout << score << std::endl;
         std::cout << "toPlay playedColumn: "<< toPlay.playedColumn << std::endl;
         std::cout << std::endl << std::endl;
