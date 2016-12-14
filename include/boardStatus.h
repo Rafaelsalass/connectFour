@@ -25,6 +25,9 @@ class boardStatus
 boardStatus::boardStatus(){
 }
 
+/**
+* Overloaded constructor.
+*/
 boardStatus::boardStatus(int board[rows][column]){
     this->setBoard(board);
     this->score = 0;
@@ -41,6 +44,10 @@ void boardStatus::setBoard(int board[rows][column]){
         }
     }
 }
+
+/**
+* prints the current status of the board in the object.
+*/
 void boardStatus::print(){
     int i,j;
     for(i = 0; i < rows; i++){
@@ -52,15 +59,17 @@ void boardStatus::print(){
     }
 }
 
-
+/**
+* Look for playerOne and playerTwo int the board and
+* adds to the socore the return value of th funtion chechSurroundings
+*/
 void boardStatus::calculatedScore(){
     int i,j, winPossibility, losePossibility;
     winPossibility = losePossibility = 0;
     for(i = 0; i < rows; i++){
         for(j = 0; j < column; j++){
-            /*if(board[i][j] == 0){
-                continue;
-            }else*/ if(board[i][j] == playerOne){
+
+	    if(board[i][j] == playerOne){
                 losePossibility += checkSurroundings(i, j, playerOne);
             }else if(board[i][j] == playerTwo){
                 winPossibility += checkSurroundings(i, j, playerTwo);
@@ -71,6 +80,11 @@ void boardStatus::calculatedScore(){
 
 }
 
+
+/**
+* Looks for the possible moves that can lead to a win situation and generates and score out
+* of that possible moves
+*/
 int boardStatus::checkSurroundings(int x, int j, int player){
     int cont=0,score=0,b=0;
     //vertical abajo

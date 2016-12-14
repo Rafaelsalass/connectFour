@@ -58,6 +58,10 @@ game::game(){
     display = NULL;
 }
 
+/**
+* Loads all the images that the game needs to look properly,
+* and calls the funtion starGame()
+*/
 game::game(ALLEGRO_DISPLAY* display){
     srand( time(0) );
     background = al_load_bitmap("gameGraphics/background.png");
@@ -74,11 +78,16 @@ game::game(ALLEGRO_DISPLAY* display){
     startGame();
 }
 
+/**
+* controls the flow of the game and manage the players turns
+* it calls the funtions that generate input to the game
+*/
 void game::startGame(){
     this->changeBackground();
     this->clearBoard();
 
     playerController = rand() % 1 + 1;
+
 
     while(playerController < endGame){
 
@@ -108,6 +117,9 @@ void game::startGame(){
 
 }
 
+/**
+* Clears the board by putting 0 in every space of the game board.
+*/
 void game::clearBoard(){
     int i, j;
     for (i = 0; i < rows; i++){
@@ -118,6 +130,9 @@ void game::clearBoard(){
 
 }
 
+/**
+* Prints the board with the std output.
+*/
 void game::printBoard(boardStatus newBoardStatus){
     int i, j;
     for (i = 0; i < rows; i++){
@@ -128,6 +143,10 @@ void game::printBoard(boardStatus newBoardStatus){
     }
 }
 
+/**
+* controls the animation of the circles falling down it updates the board
+* with the input of the player or the computer.
+*/
 void game::updateBoard(int playerController){
     int row = 1;
     if(board[row][actualColumn] != 0){
@@ -146,6 +165,10 @@ void game::updateBoard(int playerController){
     //std::cout << "[" << row << "," << actualColumn << "]" << std::endl;
 }
 
+/**
+* Gets the input from the mouse of the human player base on the position of the mouse when
+* the user perform a click action.
+*/
 bool game::getActualColumn(){
     ALLEGRO_EVENT_QUEUE* eventQueue = NULL;
     ALLEGRO_EVENT event;
@@ -193,6 +216,10 @@ bool game::getActualColumn(){
                 }
 }
 
+/**
+* Base on the current board it looks if there is four circles of the same player
+* in a line wich means that one player won the match
+*/
 bool game::checkWin(){
     int horizontal = 1;
     int vertical = 1;
@@ -288,6 +315,12 @@ bool game::checkWin(){
 
 }
 
+ 
+/**
+* Base on the parameters it looks if there is four circles of the same player
+* in a line wich means that one player won the match
+*/
+
 bool game::checkWin(int newRow, int newColumn, int player, boardStatus newBoardStatus){
     int horizontal = 1;
     int vertical = 1;
@@ -372,11 +405,15 @@ bool game::checkWin(int newRow, int newColumn, int player, boardStatus newBoardS
     return false;
 }
 
+/**
+* Displays the instructions an after a moment displays the graphical 
+* layout of the game.
+*/
 void game::changeBackground(){
     al_rest(.15);
     al_draw_bitmap(instructions, -85, 0, 0);
     al_flip_display();
-    al_rest(1);
+    al_rest(5);
     if(! al_resize_display(display, widthPixels, heightPixels)){
         std::cout << "can't resize" << std::endl;
     }
@@ -390,6 +427,10 @@ void game::changeBackground(){
     al_flip_display();
 }
 
+/**
+* repaint the grphical interface of the game base on the
+* current state of it.
+*/
 void game::printGraphicalBoard(){
     int x,y;
     for (x = 0; x < rows; x++){
@@ -427,6 +468,11 @@ bool game::isDraw(){
     return true;
 }
 
+/**
+* controls the input from the computer AI to the startGame() funtion
+* displays with the standart output the existence of a terminal situation
+* in the game or the use of the alpha beta algorythm.
+*/
 int game::computerMove(){
     std::vector<boardStatus> moves;
     boardStatus toPlay;
@@ -455,7 +501,10 @@ int game::computerMove(){
     }
 }
 
-
+/**
+* return a std::vector with all the posible moves where the given
+* player can place a circle.
+*/
 std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int player){
     std::vector<boardStatus> moves;
     boardStatus aux;
@@ -479,6 +528,9 @@ std::vector<boardStatus> game::possibleMoves(boardStatus newBoardStatus, int pla
 
 }
 
+/**
+* returns the best possible game move for the computer.
+*/
 int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPlayer, int deep, boardStatus* toPlay){
     std::vector<boardStatus> newMoves;
     newMoves = this->possibleMoves(newBoardStatus, playerOne);
@@ -486,32 +538,19 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
     int childValue;
 
     if(newMoves.size() == 0 || deep <= 0){
-        //std::cout << "newMoves.size() :" << newMoves.size()<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<std::endl;
-        //std::cin.get();
-        newBoardStatus.calculatedScore();
         bestValue = newBoardStatus.score;
 
     }else {
-        //std::cout << "maxPlayer: " << maxPlayer<<" deep: "<<deep<<std::endl;
-        //std::cin.get();
         if(maxPlayer){
             newMoves.clear();
             newMoves = this->possibleMoves(newBoardStatus, playerOne);
             bestValue = alpha;
             for (int i = 0; i < newMoves.size(); i ++){
-                //std::cout << "i: " << i<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
-                //newMoves[i].print();
-                //std::cin.get();
-                childValue = alphaBeta(newMoves[i], bestValue, beta, false, --deep, toPlay);
-                //std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
                 if(childValue > bestValue){
-                    //std::cout << "ENTRO"<<std::endl;
                     bestValue = childValue;
                     toPlay->playedColumn = newMoves[i].playedColumn;
-                    //std::cout << "childValue: " << childValue<<" bestValue-alpha: "<<bestValue<<std::endl;
                 }
                 if(beta <= bestValue){
-                    //std::cout << "bestValue: "<<bestValue<<" beta: "<<beta<<std::endl;
                     break;
                 }
             }
@@ -520,19 +559,10 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
             newMoves = this->possibleMoves(newBoardStatus, playerTwo);
             bestValue = beta;
             for (int j = 0; j < newMoves.size(); j++){
-                //std::cout << "j: " << j<<" alpha: "<<alpha<<" beta: "<<beta<<" bestValue: "<<bestValue<<" deep: "<<deep<<" maxPlayer:"<<maxPlayer<<std::endl;
-                //newMoves[j].print();
-                //std::cin.get();
-                childValue = alphaBeta(newMoves[j], alpha, bestValue, true, --deep, toPlay);
-                //std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
                 if(childValue < bestValue){
-                    //std::cout << "ENTRO"<<std::endl;
                     bestValue = childValue;
-
-                    //std::cout << "childValue: " << childValue<<" bestValue-beta: "<<bestValue<<std::endl;
                 }
                 if(bestValue <= alpha){
-                    //std::cout << "bestValue: "<<bestValue<<" alpha: "<<alpha<<std::endl;
                     break;
                 }
             }
@@ -541,6 +571,10 @@ int game::alphaBeta(boardStatus newBoardStatus, int alpha, int beta, bool maxPla
     return bestValue;
 }
 
+/**
+* look for a terminal state when a player have
+* a possible move that can lead to the end of the match.
+*/
 bool game::terminalState(boardStatus newBoardStatus, boardStatus* toplay, int player){
     std::vector<boardStatus> moves;
     moves = this->possibleMoves(newBoardStatus, playerController);
